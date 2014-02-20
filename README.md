@@ -20,7 +20,7 @@ Example
 =======
 
 ```javascript
-var makeInstaller = require('incremental-installer')
+var makeInstaller = require('incremental-installer-maker')
 var run = makeInstaller.run
 
 makeInstaller('myInstaller.sh', {
@@ -58,15 +58,15 @@ Install
 =======
 
 ```
-npm install incremental-installer
+npm install incremental-installer-maker
 ```
 
 #Usage
 
 ## Steps
 
-1. **Write the script builder** - Create a node.js script that requires 'incremental-installer' (it must be that name, currently, for the resulting script to work)
-  * any non-built-in `require`d modules **other** than 'incremental-installer' must be added to the `files` list.
+1. **Write the script builder** - Create a node.js script that requires 'incremental-installer-maker' (it must be that name, currently, for the resulting script to work)
+  * any non-built-in `require`d modules **other** than 'incremental-installer-maker' must be added to the `files` list.
   * the script should specify a stateFile location (via the `options.stateFile` function) where the state of the install can be saved on the machine
 2. **Run the script builder** - Running the node.js script you created will output a shell script at the `filepath` you specified
   * You must run the script in an environment where the commands`tar`, `uuencode`, `cp -Rf`, and `rm -Rf` are all available (so basically, a linux machine)
@@ -85,7 +85,7 @@ npm install incremental-installer
 ## node API
 
 ```javascript
-var makeInstaller = require('incremental-installer')
+var makeInstaller = require('incremental-installer-maker')
 ```
 
 `makeInstaller(filepath, options)` - creates an installer shell script
@@ -107,11 +107,16 @@ var makeInstaller = require('incremental-installer')
        * `check(args)` - A function that returns Future(true) (*see [async-future](https://github.com/fresheneesz/asyncFuture)*) if the `install` function of the object should be run.
        * *Both these functions take in the commandline arguments to the shell script as its only parameter.*
 
-`makeInstaller.run(command, printToConsole)` - runs a system command, displays the output on the console, and returns when the command is done. Throws an exception if the command returns an exit code other than 1.
+`makeInstaller.run(command, printToConsole)` - runs a system command, displays the output on the console, and returns when the command is done. Throws an exception if the command returns an exit code other than `0`.
  * `command` - a string of the command to run
  * `printToConsole` - *(Optional- default true)* If true, output is displayed to the console. If false, its not.
 
 `makeInstaller.Future` - a reference to [async-future](https://github.com/fresheneesz/asyncFuture) for convenience (e.g. to use in `options.scripts[n].check` above)
+
+Recommendations
+======
+
+I recommend using node-fibers for concurrency. This library uses [async-future](https://github.com/fresheneesz/asyncFuture) because requiring multiple versions of node-fibers isn't safe (causes bugs). But you can 
 
 Tested OSes
 ==========
@@ -121,9 +126,10 @@ Tested OSes
 Todo
 ====
 
+* separate the shell script creation from the incremental node.js function runner into two different modules, and use each to remake this one
 * Test on various operating systems
 * if node.js exists, check to make sure the version is one of the listed nodeVersions
-* Improve the way incremental-installer creates the archive:
+* Improve the way incremental-installer-maker creates the archive:
   * Either use this for the original tarring instead of creating a temporary folder: http://stackoverflow.com/questions/21790843/how-to-rename-files-you-put-into-a-tar-archive-using-linux-tar/21795845
   * or use tar-stream and zlip to create the archive (best solution, but more complex)
     * You can use [tar-fs](https://github.com/mafintosh/tar-fs) to pack directories!
@@ -148,7 +154,7 @@ How to submit pull requests:
 5. edit!
 6. If it's a code change, please add to the unit tests (at test/protoTest.js) to verify that your change
 7. When you're done, run the test and test the resulting installer on a fresh linux installation (try vagrant) to make sure things still work right
-  * The resutling installer ("mytestinstaller.sh") should print out all the files in the embedded package, then should print 'one', 'checking two', 'Running two. ...' and print the command line arguments, 'three', then 'four' the first time
+  * The resulting installer ("mytestinstaller.sh") should print out all the files in the embedded package, then should print 'one', 'checking two', 'Running two. ...' and print the command line arguments, 'three', then 'four' the first time
   * Subsequent runs should *not* print out 'one', 'three', or 'four' but should print out the rest.
   * I recommend using vagrant snapshots to test your work
 8. Commit and push your changes
