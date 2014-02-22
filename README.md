@@ -1,5 +1,5 @@
 
-`incremental-installer`
+`incremental-installer-maker`
 =====
 
 A module that helps create scripts that install non-npm dependencies for a project. Allows for smoothly and incremental adding dependencies during development.
@@ -35,7 +35,7 @@ makeInstaller('myInstaller.sh', {
             run('yum install -y nano')
         },
         function(args) { // runs second, only if the state is less than 1
-			run('yum install -y nano')
+			run('yum install -y locate')
         },
         {  install: function(args) { // runs third, only if the 'check' function returns true
               run('yum install -y git')
@@ -127,6 +127,7 @@ Todo
 ====
 
 * separate the shell script creation from the incremental node.js function runner into two different modules, and use each to remake this one
+* have a way for files to be renamed/re-pathed in the files list
 * Test on various operating systems
 * if node.js exists, check to make sure the version is one of the listed nodeVersions
 * Improve the way incremental-installer-maker creates the archive:

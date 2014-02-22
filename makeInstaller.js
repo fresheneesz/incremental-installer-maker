@@ -169,7 +169,7 @@ function build(filepath, options) {
     var installScriptFileName = path.basename(installScriptPath)
     packageFutures.push(addToPackage(installScriptPath))
     // this script (renamed to the package name)
-    packageFutures.push(addToPackage(__filename, 'node_modules/incremental-installer.js'))
+    packageFutures.push(addToPackage(__filename, 'node_modules/incremental-installer-maker.js'))
     // this script's dependencies
     packageFutures.push(addToPackage(__dirname+'/node_modules/async-future/asyncFuture.js', 'node_modules/async-future.js')) // rename to the package name
     packageFutures.push(addToPackage(__dirname+'/node_modules/async-future/node_modules/trimArguments/trimArguments.js', 'node_modules/'))
