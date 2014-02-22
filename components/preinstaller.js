@@ -1,4 +1,4 @@
-var install = require("incremental-installer")
+var install = require("incremental-installer-maker")
 install.switch = 'run'
 var run = install.run
 
