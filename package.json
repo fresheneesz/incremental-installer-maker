@@ -1,10 +1,10 @@
 {"name":"incremental-installer-maker",
- "version":"0.0.3",
+ "version":"0.0.4",
  "main":"makeInstaller.js",
  "description": "A module that helps create scripts that install non-npm dependencies for a project. Allows for smoothly and incremental adding dependencies during development",
  "keywords": ["installer", "install", "package", "dependencies"],
  "dependencies":{
-    "async-future": "0.1.10"
+    "async-future": "1.0.3"
  },
  "devDependencies": {
      "deadunit": ""
