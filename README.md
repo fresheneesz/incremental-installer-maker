@@ -2,57 +2,7 @@
 `incremental-installer-maker`
 =====
 
-A module that helps create scripts that install non-npm dependencies for a project. Allows for smoothly and incremental adding dependencies during development.
-
-During development, multiple engineers on a project will need to add dependencies and configuration for the project - things like database schema changes, version upgrades, and additions to the technology stack. This library helps you create installers that can be run quickly on every pull from the repository to ensure all the correct configuration is in place. The installers created with this will be idempotent - meaning you can run them multiple times without bad things happening. The installer will only install pieces that have not yet been installed.
-
-This way, engineers can easily be sure they have the correct setup, automatically.
-
-What is it good for?
-==============
-* absolutely nothing!
-* Wait actually, its good for creating installers for one-time dependencies of a project (databases, caching systems, encryption packages, etc),
-* installers for automatically setting up and configuring development environments (git, nano, adding package repositories, configuring test users or test data, etc), for example installing on vagrant virtual machines,
-* or setting up shared environments (creating users, creating directory structures, setting up groups and permissions, etc)
-
-
-Example
-=======
-
-```javascript
-var makeInstaller = require('incremental-installer-maker')
-var run = makeInstaller.run
-
-makeInstaller('myInstaller.sh', {
-    nodeVersions: ['0.10.25'], // indicates what node.js versions can be installed
-    stateFile: function(args) {
-        var installationLocation = args[1]
-        return installationLocation+'/install.state'
-    },
-
-    scripts: [
-        function(args) { // runs first, only if the state is 0
-            run('yum install -y nano')
-        },
-        function(args) { // runs second, only if the state is less than 1
-			run('yum install -y locate')
-        },
-        {  install: function(args) { // runs third, only if the 'check' function returns true
-              run('yum install -y git')
-           },
-           check: function(args) { // checks to see if the install function of this object should be run
-              if(isGitInstalled()) {
-                  return false
-              } else {
-                  return true
-              }
-           }
-        }
-    ]
-
-})
- ```
-
+THIS MODULE IS OBSOLETE. It has been superceded by: [installer-maker](https://github.com/fresheneesz/installer-maker) and [incremental-installer](https://github.com/fresheneesz/incremental-installer).
 
 Install
 =======
@@ -113,53 +63,10 @@ var makeInstaller = require('incremental-installer-maker')
 
 `makeInstaller.Future` - a reference to [async-future](https://github.com/fresheneesz/asyncFuture) for convenience (e.g. to use in `options.scripts[n].check` above)
 
-Recommendations
-======
-
-I recommend using node-fibers for concurrency. This library uses [async-future](https://github.com/fresheneesz/asyncFuture) because requiring multiple versions of node-fibers isn't safe (causes bugs). But you can 
-
 Tested OSes
 ==========
 
 * Centos 6.5
-
-Todo
-====
-
-* separate the shell script creation from the incremental node.js function runner into two different modules, and use each to remake this one
-* have a way for files to be renamed/re-pathed in the files list
-* Test on various operating systems
-* if node.js exists, check to make sure the version is one of the listed nodeVersions
-* Improve the way incremental-installer-maker creates the archive:
-  * Either use this for the original tarring instead of creating a temporary folder: http://stackoverflow.com/questions/21790843/how-to-rename-files-you-put-into-a-tar-archive-using-linux-tar/21795845
-  * or use tar-stream and zlip to create the archive (best solution, but more complex)
-    * You can use [tar-fs](https://github.com/mafintosh/tar-fs) to pack directories!
-* use browserify to package together the main script, so the user doesn't have to manually specify which dependencies to package up
-* Make this work for windows
-
-How to Contribute!
-============
-
-Anything helps:
-
-* Creating issues (aka tickets/bugs/etc). Please feel free to use issues to report bugs, request features, and discuss changes
-* Updating the documentation: ie this readme file. Be bold! Help create amazing documentation!
-* Submitting pull requests.
-
-How to submit pull requests:
-
-1. Please create an issue and get my input before spending too much time creating a feature. Work with me to ensure your feature or addition is optimal and fits with the purpose of the project.
-2. Fork the repository
-3. clone your forked repo onto your machine and run `npm install` at its root
-4. If you're gonna work on multiple separate things, its best to create a separate branch for each of them
-5. edit!
-6. If it's a code change, please add to the unit tests (at test/protoTest.js) to verify that your change
-7. When you're done, run the test and test the resulting installer on a fresh linux installation (try vagrant) to make sure things still work right
-  * The resulting installer ("mytestinstaller.sh") should print out all the files in the embedded package, then should print 'one', 'checking two', 'Running two. ...' and print the command line arguments, 'three', then 'four' the first time
-  * Subsequent runs should *not* print out 'one', 'three', or 'four' but should print out the rest.
-  * I recommend using vagrant snapshots to test your work
-8. Commit and push your changes
-9. Submit a pull request: https://help.github.com/articles/creating-a-pull-request
 
 
 Change Log
